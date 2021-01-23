@@ -1,0 +1,115 @@
+# Scalar types (single value) - String, Boolean, Int, Float, ID
+# Type definitions (schema)
+# If one of the fields is not a scalar type, we must create a resolver to teach graphql how to get the data
+
+type Query {
+   posts(query: String): [Post!]!
+   users(query: String): [User!]!
+   comments(query: String): [Comment!]!
+   greeting(name: String): String!
+}
+
+type Mutation {
+   createUser(data: CreateUserInput): AuthPayload!
+   authenticateUser(data: AuthenticateUserInput): AuthPayload!
+   deleteUser(id: ID!): User!
+   updateUser(data: UpdateUserInput!): User!
+   createPost(data: CreatePostInput): Post!
+   deletePost(id: ID!): Post!
+   updatePost(id: ID!, data: UpdatePostInput!): Post!
+   createComment(data: CreateCommentInput): Comment!
+   deleteComment(id: ID!): Comment!
+   updateComment(id: ID!, data: UpdateCommentInput!): Comment!
+}
+
+type Subscription {
+   comment(postId: ID!): CommentSubscriptionPayload!
+   post: PostSubscriptionPayload!
+}
+
+type AuthPayload {
+   token: String!
+   user: User!
+}
+
+input AuthenticateUserInput {
+   email: String!
+   password: String!
+}
+
+input CreateUserInput {
+   name: String!
+   email: String!
+   age: Int
+   password: String!
+}
+
+input UpdateUserInput {
+   name: String
+   email: String
+   age: Int
+}
+
+input CreatePostInput {
+   title: String!
+   body: String!
+   published: Boolean!
+}
+
+input UpdatePostInput {
+   title: String
+   body: String
+   published: Boolean
+}
+
+input CreateCommentInput {
+   text: String!
+   author: ID!
+   post: ID!
+}
+
+input UpdateCommentInput {
+   text: ID
+}
+
+type User {
+   id: ID!
+   name: String!
+   email: String
+   password: String!
+   age: Int
+   posts: [Post!]
+   comments: [Comment!]
+}
+
+type Post {
+   id: ID!
+   title: String!
+   body: String!
+   published: Boolean!
+   author: User!
+   comments: [Comment!]
+}
+
+type Comment {
+   id: ID!
+   text: String!
+   author: User!
+   post: Post!
+}
+
+enum MutationType {
+   CREATED
+   UPDATED
+   DELETED
+}
+
+type PostSubscriptionPayload {
+   mutation: MutationType!
+   data: Post!
+}
+
+type CommentSubscriptionPayload {
+   mutation: MutationType!
+   data: Comment!
+}
